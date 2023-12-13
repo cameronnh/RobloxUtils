@@ -1,5 +1,5 @@
 -- ClientTouched
--- poolcreep
+-- Cameron Jewett (poolcreep)
 -- November 10, 2023
 
 local Players = game:GetService("Players")
