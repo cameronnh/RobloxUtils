@@ -4,7 +4,6 @@ local HttpService = game:GetService("HttpService")
 local currentTweens: {[string]: {tween: Tween, conn: RBXScriptConnection}} = {}
 
 local function clean(id: string)
-    currentTweens[id].tween:Cancel()
     currentTweens[id].tween:Destroy()
     currentTweens[id].conn:Disconnect()
 
@@ -21,14 +20,17 @@ return function (instance: any, tweeninfo: TweenInfo, props: {any}, callback: ()
     end
 
     if currentTweens[id] then
-        clean(id)
+        currentTweens[id].tween:Cancel()
     end
 
     local newTween: Tween = TweenService:Create(instance, tweeninfo, props)
-    newTween:Play()
 
     local newConn: RBXScriptConnection
-    newConn = newTween.Completed:Once(function()
+    newConn = newTween.Completed:Connect(function(--[[playbackState: Enum.PlaybackState]]): ()
+        -- if playbackState ~= Enum.PlaybackState.Completed then
+        --     return
+        -- end
+
         clean(id)
 
         if not callback then
@@ -39,4 +41,5 @@ return function (instance: any, tweeninfo: TweenInfo, props: {any}, callback: ()
     end)
 
     currentTweens[id] = {tween = newTween, conn = newConn}
+    newTween:Play()
 end
